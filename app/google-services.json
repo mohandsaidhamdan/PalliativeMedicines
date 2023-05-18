@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "292996363778",
+    "project_id": "palliativemedicine-d7b39",
+    "storage_bucket": "palliativemedicine-d7b39.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:292996363778:android:73dc7d55976a611e14d91b",
+        "android_client_info": {
+          "package_name": "com.iug.palliativemedicine"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "292996363778-c8vnordemvat1vug2r93h0scuinis253.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFhjT9RiGSvkJGw0uglxnqOe7Axz0WD5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "292996363778-c8vnordemvat1vug2r93h0scuinis253.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
