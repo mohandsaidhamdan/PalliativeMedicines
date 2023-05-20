@@ -45,4 +45,8 @@ class Home : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
 }
