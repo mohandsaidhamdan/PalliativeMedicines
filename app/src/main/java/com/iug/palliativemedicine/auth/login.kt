@@ -55,10 +55,10 @@ class login : AppCompatActivity() {
                     val check = getSharedPreferences("SelectionFavorite", MODE_PRIVATE).getBoolean("che", false)
 
                     val i: Intent
-
                     if (check) {
                         i = Intent(this, Home::class.java)
                     } else {
+//                        i = Intent(this, signup::class.java)
                         i = Intent(this, Favorite::class.java)
                     }
 

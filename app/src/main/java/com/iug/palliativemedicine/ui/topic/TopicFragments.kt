@@ -1,4 +1,4 @@
-package com.iug.palliativemedicine.ui.advice
+package com.iug.palliativemedicine.ui.topic
 
 
 import android.annotation.SuppressLint
@@ -22,9 +22,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.R
-import com.iug.palliativemedicine.auth.login
+import com.iug.palliativemedicine.chat.ListUserChat
 import com.iug.palliativemedicine.databinding.FragmentAdviceBinding
-import com.iug.palliativemedicine.databinding.FragmentHomeBinding
 import com.iug.palliativemedicine.topic.detailDiseases
 import com.iug.palliativemedicine.model.topic
 import com.iug.palliativemedicine.topic.AddTopic
@@ -32,7 +31,7 @@ import com.squareup.picasso.Picasso
 import java.util.*
 
 
-class AdviceFragments : Fragment() {
+class TopicFragments : Fragment() {
     // Initialize FirebaseStorage instance
     val storage = FirebaseStorage.getInstance()
     lateinit var db: FirebaseFirestore
@@ -40,7 +39,7 @@ class AdviceFragments : Fragment() {
     private val IMAGE_PICK_REQUEST = 100
     lateinit var imageViewDialog: ImageView
     lateinit var url: String
-
+    private lateinit var filterList: ArrayList<topic>
     var Adapter: FirestoreRecyclerAdapter<topic, topicItem>? = null
     lateinit var binding: FragmentAdviceBinding
 
@@ -99,7 +98,10 @@ class AdviceFragments : Fragment() {
 
 
 
-
+        binding.btnChat.setOnClickListener {
+            val i = Intent(context, ListUserChat::class.java)
+            startActivity(i)
+        }
 
 
 
@@ -220,10 +222,10 @@ class AdviceFragments : Fragment() {
     }
 
     fun apabter(option: FirestoreRecyclerOptions<topic>) {
-        Adapter = object : FirestoreRecyclerAdapter<topic, topicItem>(option) {
+        Adapter = object : FirestoreRecyclerAdapter<topic, topicItem>(option)  {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): topicItem {
                 var view = LayoutInflater.from(context)
-                    .inflate(R.layout.itemtopic, parent, false)
+                    .inflate(R.layout.item_topic, parent, false)
                 return topicItem(view)
             }
 
@@ -261,6 +263,8 @@ class AdviceFragments : Fragment() {
 
 
             }
+
+
 
         }
 

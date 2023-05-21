@@ -202,7 +202,7 @@ class detailDiseases : AppCompatActivity() {
         Adapter = object : FirestoreRecyclerAdapter<advice, topicItem>(option) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): topicItem {
                 var view = LayoutInflater.from(this@detailDiseases)
-                    .inflate(R.layout.itemadvice, parent, false)
+                    .inflate(R.layout.item_advice, parent, false)
                 lottieAnimationView.visibility = View.GONE
                 return topicItem(view)
             }

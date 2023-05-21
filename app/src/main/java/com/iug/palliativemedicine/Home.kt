@@ -1,9 +1,7 @@
 package com.iug.palliativemedicine
 
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -39,9 +37,15 @@ class Home : AppCompatActivity() {
     }
 
 
-
     override fun onStart() {
         super.onStart()
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+    override fun onBackPressed() {
 
     }
 

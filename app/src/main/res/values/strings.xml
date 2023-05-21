@@ -13,6 +13,7 @@
     <string name="title_activity_home">Home</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">topic</string>
+    <string name="label_message">Message</string>
     <string name="title_notifications">Notifications</string>
     <string name="prostate_cancer">Prostate cancer</string>
     <string name="skin_cancer">skin cancer</string>
@@ -22,4 +23,7 @@
     <string name="brain_cancer">brain cancer</string>
     <string name="bone_cancer">bone cancer</string>
     <string name="oropharyngeal_cancer">Oropharyngeal cancer</string>
+    <string name="type_a_message">Type a message</string>
+    <string name="btn_sign_up">Sign Up</string>
+    <string name="type_message">Type Message</string>
 </resources>

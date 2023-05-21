@@ -63,7 +63,7 @@ class AddAdvice : AppCompatActivity() {
                 checkV = true
             }
             add.setOnClickListener {
-                if (check) {
+                if (check && checkV) {
                     if (titlesEt.text.toString().isNotEmpty() && detelisEt.text.toString().isNotEmpty()) {
                         createdetails(url,  binding.TopicEdt.text.toString() , titlesEt.text.toString() ,detelisEt.text.toString() ,  getCurrentDate() , uriViedo)
                         Toast.makeText(this@AddAdvice, "New advice added successfully", Toast.LENGTH_LONG).show()
@@ -73,9 +73,12 @@ class AddAdvice : AppCompatActivity() {
                     } else
                         Toast.makeText(this@AddAdvice, "All fields are required", Toast.LENGTH_SHORT).show()
 
-                } else
+                } else if(check) {
                     Toast.makeText(this@AddAdvice, "Add a photo, please", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this@AddAdvice, "Add a Video, please", Toast.LENGTH_SHORT).show()
 
+                }
 
             }
 

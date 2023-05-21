@@ -9,5 +9,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="lavender">#8692f7</color>
     <color name="yellow">#FFC801</color>
-
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorItemLeft">#E6E4E4</color>
+    <color name="colorItemRight">#813fd7</color>
+    <color name="colorText">#464646</color>
+    <color name="colorDarkGray">#464646</color>
+    <color name="colorTextBackground">#f5f5f5</color>
 </resources>

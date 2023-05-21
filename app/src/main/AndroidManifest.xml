@@ -12,12 +12,21 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/Theme.PalliativeMedicine"
         tools:targetApi="31">
         <activity
+            android:name=".ads.ads"
+            android:exported="false" />
+        <activity
+            android:name=".chat.ListUserChat"
+            android:exported="false" />
+        <activity
+            android:name=".chat.Chat"
+            android:exported="false" />
+        <activity
             android:name=".Favorite"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".topic.AddAdvice"
             android:exported="false" />
@@ -44,7 +53,9 @@
         <activity
             android:name=".auth.login"
             android:exported="false" />
-
+        <activity
+            android:name=".topic.Advice"
+            android:exported="false" />
     </application>
 
 </manifest>

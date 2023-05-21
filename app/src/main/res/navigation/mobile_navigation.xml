@@ -6,7 +6,7 @@
     app:startDestination="@+id/navigation_home">
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.iug.palliativemedicine.ui.advice.AdviceFragments"
+        android:name="com.iug.palliativemedicine.ui.topic.TopicFragments"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_advice" />
     <fragment
@@ -16,7 +16,7 @@
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.iug.palliativemedicine.ui.notifications.NotificationsFragment"
+        android:name="com.iug.palliativemedicine.ui.notification.NotificationFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 </navigation>

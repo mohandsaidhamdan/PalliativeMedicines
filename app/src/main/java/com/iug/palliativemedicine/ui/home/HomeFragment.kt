@@ -1,24 +1,39 @@
 package com.iug.palliativemedicine.ui.home
 
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.denzcoskun.imageslider.constants.AnimationTypes
+import com.denzcoskun.imageslider.interfaces.ItemClickListener
+import com.denzcoskun.imageslider.models.SlideModel
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.iug.palliativemedicine.Home
+import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.model.advice
 import com.iug.palliativemedicine.topic.AddAdvice
 import com.iug.palliativemedicine.adapter.AdapterAdvice
+import com.iug.palliativemedicine.ads.ads
 import com.iug.palliativemedicine.auth.login
+import com.iug.palliativemedicine.chat.ListUserChat
 import com.iug.palliativemedicine.databinding.FragmentHomeBinding
+import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -31,6 +46,7 @@ class HomeFragment : Fragment() {
     val topic = ArrayList<String>()
     val data = ArrayList<advice>()
     lateinit var myAdaoter: AdapterAdvice
+    val storage = FirebaseStorage.getInstance()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -52,8 +68,8 @@ class HomeFragment : Fragment() {
         // if type Account equalises doctor
         if (typeAcount == "doctor") {
             binding.fab.visibility = View.VISIBLE
+            binding.fabAds.visibility = View.VISIBLE
         }
-
 
         // btn add Advice
         binding.fab.setOnClickListener {
@@ -61,8 +77,9 @@ class HomeFragment : Fragment() {
             startActivity(i)
         }
 
-
-
+        binding.fabAds.setOnClickListener {
+            startActivity(Intent(context, ads::class.java))
+        }
 
 
         topic.add("News and articles")
@@ -94,6 +111,8 @@ class HomeFragment : Fragment() {
             }
 
         })
+
+
         binding.apply {
 
             // Sign out of the account
@@ -107,7 +126,7 @@ class HomeFragment : Fragment() {
 
         }
 
-
+        sliderImage()
         return root
     }
 
@@ -129,28 +148,28 @@ class HomeFragment : Fragment() {
 //                for (document in querySnapshot) {
 //                    val topicItem = document.getString("topic")
 //                    if (topicItem != null) {
-                        db.collection("advice")
-                            .get()
-                            .addOnSuccessListener {
-                                for (doc in it) {
-                                    data.add(
-                                        advice(
-                                            doc.getString("topic").toString(),
-                                            doc.getString("uri").toString(),
-                                            doc.getString("title").toString(),
-                                            doc.getString("description").toString(),
-                                            doc.getTimestamp("date")!!.toDate(),
-                                            doc.getBoolean("hidden")!!
-                                        )
+        db.collection("advice")
+            .get()
+            .addOnSuccessListener {
+                for (doc in it) {
+                    data.add(
+                        advice(
+                            doc.getString("topic").toString(),
+                            doc.getString("uri").toString(),
+                            doc.getString("title").toString(),
+                            doc.getString("description").toString(),
+                            doc.getTimestamp("date")!!.toDate(),
+                            doc.getBoolean("hidden")!!
+                        )
 
 
-                                    )
-                                }
-                                myAdaoter.notifyDataSetChanged()
-                                if (data.size == 0) {
-                                    binding.textviewNonTopic.visibility = View.VISIBLE
-                                }
-                            }
+                    )
+                }
+                myAdaoter.notifyDataSetChanged()
+                if (data.size == 0) {
+                    binding.textviewNonTopic.visibility = View.VISIBLE
+                }
+            }
 //                    }
 //                }
 //            }
@@ -197,5 +216,50 @@ class HomeFragment : Fragment() {
                 }
             }
     }
+
+
+    @SuppressLint("SuspiciousIndentation")
+    fun sliderImage() {
+        var title = ""
+        val imageSlider = binding.imageSlider
+        val imageList = ArrayList<SlideModel>()
+        db.collection("ads").orderBy("date", Query.Direction.ASCENDING).limit(5).get()
+            .addOnSuccessListener {
+                for (doc in it) {
+                    var imageUrl = doc.get("uri").toString()
+                    title = doc.get("title").toString()
+
+                    val storageRef =
+                        storage.reference.child(imageUrl)
+                    storageRef.downloadUrl.addOnSuccessListener { uri ->
+                        var Url = uri.toString()
+                        imageList.add(SlideModel(Url, title))
+                        imageSlider.setImageList(imageList)
+                        imageSlider.setSlideAnimation(AnimationTypes.ROTATE_DOWN)
+                    }
+                }
+            }
+
+//        if (imageList.size == 0) {
+//            imageList.add(SlideModel("https://bit.ly/2YoJ77H", "The animal population decreased by 58 percent in 42 years."))
+//            imageList.add(SlideModel("https://bit.ly/2YoJ77H", "The animal population decreased by 58 percent in 42 years."))
+//            imageSlider.setImageList(imageList)
+//            imageSlider.setSlideAnimation(AnimationTypes.ROTATE_DOWN)
+//        }
+
+
+        imageSlider.setItemClickListener(object : ItemClickListener {
+            override fun onItemSelected(position: Int) {
+                startActivity(Intent(context, ads::class.java))
+            }
+
+            override fun doubleClick(position: Int) {
+                // Do not use onItemSelected if you are using a double click listener at the same time.
+                // Its just added for specific cases.
+                // Listen for clicks under 250 milliseconds.
+            }
+        })
+    }
+
 }
 

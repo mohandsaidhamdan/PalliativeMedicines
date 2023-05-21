@@ -18,7 +18,7 @@ class splash : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
-       val sheck = getSharedPreferences("SelectionFavorite" , MODE_PRIVATE).getBoolean("che" , false)
+       val check = getSharedPreferences("SelectionFavorite" , MODE_PRIVATE).getBoolean("che" , false)
 
         lottieAnimationView = findViewById(R.id.lottie)
         lottieAnimationView.animate().translationY((0).toFloat()).setDuration(4000).setStartDelay(1500).withEndAction {
@@ -26,7 +26,7 @@ class splash : AppCompatActivity() {
             val ch=  getSharedPreferences("user", MODE_PRIVATE).getBoolean("che" , false)
 
                 if (ch){
-                    if (sheck) {
+                    if (check) {
                         startActivity( Intent(this, Home::class.java))
                         finish()
                     }else{

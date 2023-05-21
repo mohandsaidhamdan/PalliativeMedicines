@@ -20,10 +20,9 @@
             android:layout_height="wrap_content">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardView2"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="0dp"
                 android:backgroundTint="@color/teal_200"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -81,67 +80,28 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="80dp"
-                app:cardCornerRadius="30dp"
-                app:cardElevation="3dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="70dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/image_view_slider"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/dec" />
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="30dp"
-                        android:layout_marginTop="10dp"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Talk to the doctor now"
-                            android:textColor="#0F7513"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="5sp"
-                            android:maxWidth="200dp"
-                            android:text="Simply enter your ailments and a doctor will speak to you shortly"
-                            android:textSize="14sp" />
-
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="30dp"
-                        android:layout_marginBottom="10dp"
-                        android:backgroundTint="#11AA9C"
-                        android:padding="10dp"
-                        android:text="speak now"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
+                <com.denzcoskun.imageslider.ImageSlider
+                    android:id="@+id/image_slider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="300dp"
+                    app:iss_auto_cycle="true"
+                    app:iss_period="1500"
+                    app:iss_delay="1500"
+                    app:iss_text_align="CENTER"/>
             </androidx.cardview.widget.CardView>
+
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <SearchView
@@ -190,5 +150,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/add2" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginTop="80dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:backgroundTint="#FFFFFF"
+        android:contentDescription="TODO"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

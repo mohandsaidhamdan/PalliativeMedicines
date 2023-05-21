@@ -47,7 +47,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val root = LayoutInflater.from(activity).inflate(R.layout.itemadvice, parent, false)
+        val root = LayoutInflater.from(activity).inflate(R.layout.item_advice, parent, false)
         //val root = LayoutInflater.from(activity).inflate(R.layout.activity_item_view_book_favorite, parent, false)
         return MyViewHolder(root)
     }
@@ -72,10 +72,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
                 // Do something when the positive button is clicked
                 Toast.makeText(activity, "delete Successful", Toast.LENGTH_SHORT).show()
                 getidDelete(data[position].title.toString())
-                val intent = Intent(activity, Home::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                activity.startActivity(intent)
-                activity.finish()
+
                 dialog.dismiss()
 
             }
@@ -99,13 +96,15 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
             holder.imageHidden.setImageResource(R.drawable.show)
         }
         holder.btnHidden.setOnClickListener {
-            notifyDataSetChanged()
             if (data[position].hidden) {
                 getidUpdate(data[position].title.toString(), data[position].date.toString(), false)
 
             } else {
                 getidUpdate(data[position].title.toString(), data[position].date.toString(), true)
             }
+
+
+
 
         }
 
@@ -123,6 +122,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
         holder.root.setOnClickListener {
             val i = Intent(activity, Advice::class.java)
             i.putExtra("title", data[position].title)
+            i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             activity.startActivity(i)
         }
     }
@@ -169,6 +169,10 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
                     if (title == titlediv) {
                         val id = document.id
                         db.collection("advice").document(id).delete()
+
+                        val intent = Intent(activity, Home::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                        activity.startActivity(intent)
                     }
 
                 }
@@ -208,10 +212,11 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
                     if (title == titlediv) {
                         val id = document.id
                         db.collection("advice").document(id).update("hidden", hidden)
+
                         val intent = Intent(activity, Home::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                         activity.startActivity(intent)
-                        activity.finish()
+//                        activity.finish()
                     }
 
                 }
@@ -220,6 +225,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
                 Log.w(ContentValues.TAG, "Error getting documents.", exception)
             }
     }
+
 }
 
 
