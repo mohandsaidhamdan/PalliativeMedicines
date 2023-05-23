@@ -26,4 +26,9 @@
     <string name="type_a_message">Type a message</string>
     <string name="btn_sign_up">Sign Up</string>
     <string name="type_message">Type Message</string>
+    <string name="updateTitle">التعديل على العنوان</string>
+    <string name="updateImage">تعديل الصورة</string>
+    <string name="updateTopic">التعديل على عنوان الموضوع</string>
+    <string name="update">تعديل</string>
+    <string name="updateDesc">التعديل على الوصف</string>
 </resources>

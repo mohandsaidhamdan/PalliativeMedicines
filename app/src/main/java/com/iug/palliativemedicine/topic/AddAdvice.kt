@@ -27,7 +27,7 @@ class AddAdvice : AppCompatActivity() {
     private val IMAGE_PICK_REQUEST = 100
     lateinit var images: ImageView
     lateinit var url: String
-    lateinit var uriViedo: String
+     var uriViedo: String = ""
     lateinit var topic: ArrayList<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,9 +63,10 @@ class AddAdvice : AppCompatActivity() {
                 checkV = true
             }
             add.setOnClickListener {
-                if (check && checkV) {
+                if (check) {
                     if (titlesEt.text.toString().isNotEmpty() && detelisEt.text.toString().isNotEmpty()) {
-                        createdetails(url,  binding.TopicEdt.text.toString() , titlesEt.text.toString() ,detelisEt.text.toString() ,  getCurrentDate() , uriViedo)
+
+                        createdetails(url,  binding.TopicEdt.text.toString() , titlesEt.text.toString() ,detelisEt.text.toString() ,  getCurrentDate() , uriViedo )
                         Toast.makeText(this@AddAdvice, "New advice added successfully", Toast.LENGTH_LONG).show()
                         val i = Intent(this@AddAdvice , Home::class.java)
                         startActivity(i)
@@ -73,12 +74,9 @@ class AddAdvice : AppCompatActivity() {
                     } else
                         Toast.makeText(this@AddAdvice, "All fields are required", Toast.LENGTH_SHORT).show()
 
-                } else if(check) {
+                } else
                     Toast.makeText(this@AddAdvice, "Add a photo, please", Toast.LENGTH_SHORT).show()
-                }else{
-                    Toast.makeText(this@AddAdvice, "Add a Video, please", Toast.LENGTH_SHORT).show()
 
-                }
 
             }
 

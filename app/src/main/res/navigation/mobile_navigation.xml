@@ -19,4 +19,14 @@
         android:name="com.iug.palliativemedicine.ui.notification.NotificationFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/navigation_chat"
+        android:name="com.iug.palliativemedicine.ui.chat.chatFragment"
+        android:label="chat"
+        tools:layout="@layout/fragment_chat" />
+    <fragment
+        android:id="@+id/navigation_sub"
+        android:name="com.iug.palliativemedicine.ui.subscription.SubscriptionFragment"
+        android:label="favorite"
+        tools:layout="@layout/activity_favorite" />
 </navigation>

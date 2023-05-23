@@ -102,13 +102,6 @@ class Chat : AppCompatActivity() {
 
 
     }
-
-
-    override fun onBackPressed() {
-        startActivity(Intent(this, ListUserChat::class.java))
-        finish()
-    }
-
     override fun onPause() {
         super.onPause()
         val sender = getSharedPreferences("user", MODE_PRIVATE).getString("email", "").toString()
@@ -195,5 +188,6 @@ class Chat : AppCompatActivity() {
         val receiver = intent.getStringExtra("email").toString()
         writeStatus(sender, receiver, "متصل")
     }
+
 }
 

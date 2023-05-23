@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
@@ -20,15 +21,17 @@ import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.model.advice
 import com.iug.palliativemedicine.topic.Advice
+import com.iug.palliativemedicine.topic.UpdateAdvice
 import com.squareup.picasso.Picasso
+import java.security.cert.Extension
 
-class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filterable {
+class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>, Filterable {
 
 
     var activity: Activity
     var data: ArrayList<advice>
     private var filterList: ArrayList<advice>
-
+    lateinit var db: FirebaseFirestore
 
     constructor(activity: Activity, data: ArrayList<advice>) : super() {
         this.activity = activity
@@ -43,6 +46,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
         val itemTopicdiv = itemView.findViewById<TextView>(R.id.itemTopicdiv)
         val btnHidden = itemView.findViewById<CardView>(R.id.btnHidden)
         val imageHidden = itemView.findViewById<ImageView>(R.id.imageHidden)
+        val btnUpdate = itemView.findViewById<CardView>(R.id.btnUpdateAdvice)
         val root = itemView.rootView
     }
 
@@ -60,7 +64,6 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val title = data[position].title
         val date = data[position].date
-        val Image = data[position].uri
 
         holder.root.setOnLongClickListener { _ ->
 
@@ -68,7 +71,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
             dilalog.setTitle("delete advice")
             dilalog.setMessage("Are you sure to delete the advice??")
             dilalog.setPositiveButton("delete") { dialog, which ->
-              notifyDataSetChanged()
+                notifyDataSetChanged()
                 // Do something when the positive button is clicked
                 Toast.makeText(activity, "delete Successful", Toast.LENGTH_SHORT).show()
                 getidDelete(data[position].title.toString())
@@ -104,8 +107,6 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
             }
 
 
-
-
         }
 
         val sheard =
@@ -114,31 +115,46 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
 
         if (typeAcount == "doctor") {
             holder.btnHidden.visibility = View.VISIBLE
+            holder.btnUpdate.visibility = View.VISIBLE
         } else {
             holder.btnHidden.visibility = View.GONE
+            holder.btnUpdate.visibility = View.GONE
         }
         DwnloadImage(data[position].uri, holder.itemImagediv)
-
+        holder.btnUpdate.setOnClickListener {
+            val i = Intent(activity, UpdateAdvice::class.java)
+            i.putExtra("title", data[position].title)
+            i.putExtra("description", data[position].description)
+            i.putExtra("uri", data[position].uri)
+            i.putExtra("topic", data[position].topic)
+            i.putExtra("uriViedo", data[position].uriViedo)
+            i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            activity.startActivity(i)
+        }
         holder.root.setOnClickListener {
             val i = Intent(activity, Advice::class.java)
+            val sheard = activity.getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
+            val email = sheard.getString("email", "").toString()
             i.putExtra("title", data[position].title)
+            i.putExtra("description", data[position].description)
             i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             activity.startActivity(i)
         }
     }
 
+
     override fun getFilter(): Filter {
-        return object :Filter(){
+        return object : Filter() {
             override fun performFiltering(p0: CharSequence?): FilterResults {
                 val filterResults = FilterResults()
-                if (p0 == null || p0.length < 0 ){
-                    filterResults.count =filterList.size
+                if (p0 == null || p0.length < 0) {
+                    filterResults.count = filterList.size
                     filterResults.values = filterList
-                }else{
+                } else {
                     var searchchar = p0.toString().toLowerCase()
                     val itemModel = ArrayList<advice>()
-                    for (item in filterList){
-                        if (item.title.contains(searchchar)){
+                    for (item in filterList) {
+                        if (item.title.contains(searchchar)) {
                             itemModel.add(item)
                         }
                     }
@@ -151,7 +167,8 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>  , Filter
             }
 
             override fun publishResults(p0: CharSequence?, filterResults: FilterResults?) {
-                data = filterResults!!.values as ArrayList<advice> /* = java.util.ArrayList<com.example.vicky.contactreader.ContactDTO> */
+                data =
+                    filterResults!!.values as ArrayList<advice> /* = java.util.ArrayList<com.example.vicky.contactreader.ContactDTO> */
                 notifyDataSetChanged()
             }
 

@@ -22,11 +22,11 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.R
-import com.iug.palliativemedicine.chat.ListUserChat
 import com.iug.palliativemedicine.databinding.FragmentAdviceBinding
-import com.iug.palliativemedicine.topic.detailDiseases
+import com.iug.palliativemedicine.topic.TopicDetailsAdvice
 import com.iug.palliativemedicine.model.topic
 import com.iug.palliativemedicine.topic.AddTopic
+import com.iug.palliativemedicine.topic.UpdateTopic
 import com.squareup.picasso.Picasso
 import java.util.*
 
@@ -51,33 +51,9 @@ class TopicFragments : Fragment() {
         binding = FragmentAdviceBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-
-        val sheard = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
-        val typeAcount = sheard.getString("typeAccount", "").toString()
-
-        if (typeAcount == "doctor") {
-            binding.fab.visibility = View.VISIBLE
-        }
-
-        recyclerView = binding.recyclerViewTopic
-
-
-
-
-        binding.fab.setOnClickListener {
-            val i = Intent(context , AddTopic::class.java)
-            startActivity(i)
-
-        }
-
         db = Firebase.firestore
-
-        val query = db.collection("Topic")
-
-        val option =
-            FirestoreRecyclerOptions.Builder<topic>().setQuery(query, topic::class.java).build()
-        apabter(option)
-
+        recyclerView = binding.recyclerViewTopic
+        listview()
 
 //        recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
@@ -97,23 +73,14 @@ class TopicFragments : Fragment() {
         })
 
 
-
-        binding.btnChat.setOnClickListener {
-            val i = Intent(context, ListUserChat::class.java)
-            startActivity(i)
-        }
-
-
-
         return root
     }
-
-
 
 
     class topicItem(view: View) : RecyclerView.ViewHolder(view) {
         val Itemname = itemView.findViewById<TextView>(R.id.itemName)
         val ItemImage = itemView.findViewById<ImageView>(R.id.itemImage)
+        val btn_update = itemView.findViewById<ImageView>(R.id.btn_update)
         val root = itemView.rootView
 
     }
@@ -168,7 +135,7 @@ class TopicFragments : Fragment() {
     }
 
     fun getIntent(name: String) {
-        val i = Intent(context, detailDiseases::class.java)
+        val i = Intent(context, TopicDetailsAdvice::class.java)
         i.putExtra("name", name)
         startActivity(i)
         requireActivity().finish()
@@ -222,7 +189,7 @@ class TopicFragments : Fragment() {
     }
 
     fun apabter(option: FirestoreRecyclerOptions<topic>) {
-        Adapter = object : FirestoreRecyclerAdapter<topic, topicItem>(option)  {
+        Adapter = object : FirestoreRecyclerAdapter<topic, topicItem>(option) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): topicItem {
                 var view = LayoutInflater.from(context)
                     .inflate(R.layout.item_topic, parent, false)
@@ -231,7 +198,6 @@ class TopicFragments : Fragment() {
 
             override fun onBindViewHolder(holder: topicItem, position: Int, model: topic) {
                 val name = model.name
-                val Image = model.uri
 
                 holder.root.setOnLongClickListener { _ ->
 
@@ -256,21 +222,63 @@ class TopicFragments : Fragment() {
                 }
                 holder.Itemname.text = name
                 DwnloadImage(model.uri, holder.ItemImage)
-
+                val sheard =
+                    activity!!.getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
+                val typeAcount = sheard.getString("typeAccount", "").toString()
+//
+                if (typeAcount == "doctor") {
+                    holder.btn_update.visibility = View.VISIBLE
+                } else {
+                    holder.btn_update.visibility = View.GONE
+                }
                 holder.root.setOnClickListener {
                     getIntent(name)
                 }
+                holder.btn_update.setOnClickListener {
+                    val i = Intent(requireContext(), UpdateTopic::class.java)
+                    i.putExtra("imageUri", model.uri)
+                    i.putExtra("title", model.name)
+                    startActivity(i)
 
+                }
 
             }
-
 
 
         }
 
     }
 
+    fun listview() {
 
+
+        val sheard = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
+        val typeAcount = sheard.getString("typeAccount", "").toString()
+
+        if (typeAcount == "doctor") {
+            binding.fab.visibility = View.VISIBLE
+        }
+        binding.fab.setOnClickListener {
+            val i = Intent(context, AddTopic::class.java)
+            startActivity(i)
+
+        }
+
+
+
+        val query = db.collection("Topic")
+
+        val option =
+            FirestoreRecyclerOptions.Builder<topic>().setQuery(query, topic::class.java).build()
+        apabter(option)
+Adapter!!.notifyDataSetChanged()
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        listview()
+
+    }
 
 
 }

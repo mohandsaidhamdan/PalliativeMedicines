@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#32DFDEDE"
-    tools:context=".topic.detailDiseases">
+    tools:context=".topic.TopicDetailsAdvice">
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottie"
         android:layout_width="match_parent"

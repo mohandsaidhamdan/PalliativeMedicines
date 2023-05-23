@@ -79,6 +79,7 @@
                 android:text="deccrption"
                 android:textColor="@color/teal_700"
                 android:textSize="22sp"
+                android:layout_gravity="center"
                 android:textStyle="bold" />
 
             <TextView

@@ -1,8 +1,7 @@
-package com.iug.palliativemedicine.chat
+package com.iug.palliativemedicine.ui.chat
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -18,53 +19,39 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.R
+import com.iug.palliativemedicine.chat.Chat
 import com.iug.palliativemedicine.databinding.ActivityListUserChatBinding
 import com.iug.palliativemedicine.model.UserMessage
 import com.squareup.picasso.Picasso
 
-class ListUserChat : AppCompatActivity() {
 
-    private lateinit var binding: ActivityListUserChatBinding
+class chatFragment : Fragment() {
+ lateinit var binding : ActivityListUserChatBinding
+
     val storage = FirebaseStorage.getInstance()
     lateinit var url: String
     lateinit var db: FirebaseFirestore
     lateinit var recyclerView: RecyclerView
     var Adapter: FirestoreRecyclerAdapter<UserMessage, ChatItem>? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityListUserChatBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+
+
+        binding = ActivityListUserChatBinding.inflate(inflater, container, false)
+        val root: View = binding.root
 
         recyclerView = binding.recyclerViewTopic
-        val typeAcount = getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE).getString("typeAccount", "").toString()
-        val name = getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE).getString("name", "").toString()
-        db = Firebase.firestore
-
-        if (typeAcount == "doctor") {
-            val query = db.collection("users").whereNotEqualTo("name", name)
-//            .orderBy("email")
-
-            val option =
-                FirestoreRecyclerOptions.Builder<UserMessage>().setQuery(query, UserMessage::class.java)
-                    .build()
-            apabter(option)
-        }else{
-            val query = db.collection("users").whereEqualTo("typeAcount", "doctor")
-//            .orderBy("email")
-
-            val option =
-                FirestoreRecyclerOptions.Builder<UserMessage>().setQuery(query, UserMessage::class.java)
-                    .build()
-            apabter(option)
-        }
+        listView()
 
 
 
 //        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = Adapter
 
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -81,15 +68,8 @@ class ListUserChat : AppCompatActivity() {
         })
 
 
-
-
-
-
-
-
-
+        return root
     }
-
     class ChatItem(view: View) : RecyclerView.ViewHolder(view) {
         val Itemname = itemView.findViewById<TextView>(R.id.itemNamechat)
         val ItemImage = itemView.findViewById<ImageView>(R.id.itemImagechat)
@@ -109,6 +89,7 @@ class ListUserChat : AppCompatActivity() {
         Adapter!!.stopListening()
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
     fun searchList(text: String) {
         val query = db.collection("users").whereEqualTo("typeAcount", "doctor").orderBy("name")
@@ -125,7 +106,7 @@ class ListUserChat : AppCompatActivity() {
     fun apabter(option: FirestoreRecyclerOptions<UserMessage>) {
         Adapter = object : FirestoreRecyclerAdapter<UserMessage, ChatItem>(option) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatItem {
-                var view = LayoutInflater.from(this@ListUserChat)
+                var view = LayoutInflater.from(context)
                     .inflate(R.layout.item_chat, parent, false)
                 return ChatItem(view)
             }
@@ -144,7 +125,7 @@ class ListUserChat : AppCompatActivity() {
                 }
 //
                 holder.root.setOnClickListener {
-                    val i = Intent(this@ListUserChat, Chat::class.java)
+                    val i = Intent(context, Chat::class.java)
                     i.putExtra("email", model.email)
                     i.putExtra("name", model.name)
                     startActivity(i)
@@ -171,7 +152,32 @@ class ListUserChat : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        startActivity(Intent(this@ListUserChat , Home::class.java))
+    fun listView(){
+        val typeAcount = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE).getString("typeAccount", "").toString()
+        val name = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE).getString("name", "").toString()
+        db = Firebase.firestore
+
+        if (typeAcount == "doctor") {
+            val query = db.collection("users").whereNotEqualTo("name", name)
+//            .orderBy("email")
+
+            val option =
+                FirestoreRecyclerOptions.Builder<UserMessage>().setQuery(query, UserMessage::class.java)
+                    .build()
+            apabter(option)
+        }else{
+            val query = db.collection("users").whereEqualTo("typeAcount", "doctor")
+//            .orderBy("email")
+
+            val option =
+                FirestoreRecyclerOptions.Builder<UserMessage>().setQuery(query, UserMessage::class.java)
+                    .build()
+            apabter(option)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        listView()
     }
 }

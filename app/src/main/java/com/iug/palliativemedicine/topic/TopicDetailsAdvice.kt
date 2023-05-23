@@ -25,8 +25,8 @@ import com.iug.palliativemedicine.databinding.ActivityDetailDiseasesBinding
 import com.iug.palliativemedicine.model.advice
 import com.squareup.picasso.Picasso
 
-class detailDiseases : AppCompatActivity() {
-    lateinit var binding : ActivityDetailDiseasesBinding
+class TopicDetailsAdvice : AppCompatActivity() {
+    lateinit var binding: ActivityDetailDiseasesBinding
     val storage = FirebaseStorage.getInstance()
     lateinit var db: FirebaseFirestore
 
@@ -35,11 +35,6 @@ class detailDiseases : AppCompatActivity() {
 
 
     var Adapter: FirestoreRecyclerAdapter<advice, topicItem>? = null
-
-
-    private val IMAGE_PICK_REQUEST = 100
-    lateinit var imageViewDialogs: ImageView
-    lateinit var topicEt: EditText
     lateinit var url: String
 
 
@@ -53,7 +48,8 @@ class detailDiseases : AppCompatActivity() {
         val sheard = getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
         val typeAcount = sheard.getString("typeAccount", "").toString()
         lottieAnimationView = binding.lottie
-        lottieAnimationView.animate().translationY((0).toFloat()).setDuration(4000).setStartDelay(1500).withEndAction {
+        lottieAnimationView.animate().translationY((0).toFloat()).setDuration(4000)
+            .setStartDelay(1500).withEndAction {
 
         }
 
@@ -63,26 +59,27 @@ class detailDiseases : AppCompatActivity() {
         recyclerView = binding.recyclerViewTopic
 
         binding.fab.setOnClickListener {
-            val i = Intent(this@detailDiseases, AddAdvice::class.java)
+            val i = Intent(this@TopicDetailsAdvice, AddAdvice::class.java)
             startActivity(i)
         }
 
         db = Firebase.firestore
-        val sheard2 = getSharedPreferences("user" , AppCompatActivity.MODE_PRIVATE)
-        val typeAcount2 = sheard2.getString("typeAccount" , "").toString()
+        val sheard2 = getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
+        val typeAcount2 = sheard2.getString("typeAccount", "").toString()
         var query = db.collection("advice").whereEqualTo("hidden", false)
 
-        if (typeAcount2 == "doctor"){
-            query = db.collection("advice").whereEqualTo("topic" , name)
-        }else{
-            query = db.collection("advice").whereEqualTo("hidden", false).whereEqualTo("topic" , name)
+        if (typeAcount2 == "doctor") {
+            query = db.collection("advice").whereEqualTo("topic", name)
+        } else {
+            query =
+                db.collection("advice").whereEqualTo("hidden", false).whereEqualTo("topic", name)
         }
 
 
         val option =
             FirestoreRecyclerOptions.Builder<advice>().setQuery(query, advice::class.java).build()
         apabter(option)
-        recyclerView.layoutManager = GridLayoutManager(this@detailDiseases, 1)
+        recyclerView.layoutManager = GridLayoutManager(this@TopicDetailsAdvice, 1)
         recyclerView.adapter = Adapter
 
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -101,7 +98,11 @@ class detailDiseases : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        startActivity(Intent(this@detailDiseases , Home::class.java))
+
+        val i = Intent(this@TopicDetailsAdvice, Home::class.java)
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        startActivity(i)
+
     }
 
     class topicItem(view: View) : RecyclerView.ViewHolder(view) {
@@ -132,7 +133,7 @@ class detailDiseases : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 for (document in result) {
                     val title = document.get("title").toString()
-                    if (title == titlediv ) {
+                    if (title == titlediv) {
                         val id = document.id
                         db.collection("advice").document(id).delete()
                     }
@@ -160,7 +161,7 @@ class detailDiseases : AppCompatActivity() {
     }
 
 
-    fun getidUpdate(titlediv: String, datediv: String , hidden : Boolean) {
+    fun getidUpdate(titlediv: String, datediv: String, hidden: Boolean) {
         db.collection("advice")
             .get()
             .addOnSuccessListener { result ->
@@ -168,7 +169,7 @@ class detailDiseases : AppCompatActivity() {
 
                     val title = document.get("title").toString()
                     val date = document.get("date").toString()
-                    if (title == titlediv ) {
+                    if (title == titlediv) {
                         val id = document.id
                         db.collection("advice").document(id).update("hidden", hidden)
                     }
@@ -186,7 +187,7 @@ class detailDiseases : AppCompatActivity() {
         val name = intent.getStringExtra("name").toString()
         val query = db.collection("advice")
             .whereEqualTo("hidden", false)
-            .whereEqualTo("topic" , name)
+            .whereEqualTo("topic", name)
             .orderBy("title")
             .startAt(text)
             .endAt(text + "\ufaff")
@@ -201,7 +202,7 @@ class detailDiseases : AppCompatActivity() {
     fun apabter(option: FirestoreRecyclerOptions<advice>) {
         Adapter = object : FirestoreRecyclerAdapter<advice, topicItem>(option) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): topicItem {
-                var view = LayoutInflater.from(this@detailDiseases)
+                var view = LayoutInflater.from(this@TopicDetailsAdvice)
                     .inflate(R.layout.item_advice, parent, false)
                 lottieAnimationView.visibility = View.GONE
                 return topicItem(view)
@@ -214,12 +215,16 @@ class detailDiseases : AppCompatActivity() {
 
                 holder.root.setOnLongClickListener { _ ->
 
-                    val dilalog = AlertDialog.Builder(this@detailDiseases)
+                    val dilalog = AlertDialog.Builder(this@TopicDetailsAdvice)
                     dilalog.setTitle("delete advice")
                     dilalog.setMessage("Are you sure to delete the advice??")
                     dilalog.setPositiveButton("delete") { dialog, which ->
                         // Do something when the positive button is clicked
-                        Toast.makeText(this@detailDiseases, "delete Successful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@TopicDetailsAdvice,
+                            "delete Successful",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         getidDelete(model.title.toString())
                         dialog.dismiss()
 
@@ -238,56 +243,40 @@ class detailDiseases : AppCompatActivity() {
                 holder.ItemTitle.text = title
                 holder.itemTopicdiv.text = model.topic
 
-                if (model.hidden){
+                if (model.hidden) {
                     holder.imageHidden.setImageResource(R.drawable.hidden)
-                }else{
+                } else {
                     holder.imageHidden.setImageResource(R.drawable.show)
                 }
                 holder.btnHidden.setOnClickListener {
-                    if (model.hidden){
-                        getidUpdate(model.title.toString(), model.date.toString() , false)
-                    }else{
-                        getidUpdate(model.title.toString(), model.date.toString() , true)
+                    if (model.hidden) {
+                        getidUpdate(model.title.toString(), model.date.toString(), false)
+                    } else {
+                        getidUpdate(model.title.toString(), model.date.toString(), true)
                     }
 
                 }
 
-                val sheard =getSharedPreferences("user" , AppCompatActivity.MODE_PRIVATE)
-                val typeAcount = sheard.getString("typeAccount" , "").toString()
+                val sheard = getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
+                val typeAcount = sheard.getString("typeAccount", "").toString()
 
-                if (typeAcount == "doctor"){
+                if (typeAcount == "doctor") {
                     holder.btnHidden.visibility = View.VISIBLE
-                }else{
+                } else {
                     holder.btnHidden.visibility = View.GONE
 
                 }
                 DwnloadImage(model.uri, holder.itemImagediv)
 
                 holder.root.setOnClickListener {
-                    val i = Intent(this@detailDiseases, Advice::class.java)
-                    i.putExtra("title" , model.title)
+                    val i = Intent(this@TopicDetailsAdvice, Advice::class.java)
+                    i.putExtra("title", model.title)
                     startActivity(i)
                 }
             }
 
         }
     }
-    fun dialog(){
-        val dilalog = AlertDialog.Builder(this)
-        dilalog.setTitle("delete advice")
-        dilalog.setMessage("Are you sure to delete the advice??")
-        dilalog.setPositiveButton("delete") { dialog, which ->
-            // Do something when the positive button is clicked
-            Toast.makeText(this, "delete Successful", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
 
-        }
-        dilalog.setNegativeButton("cancel") { dialog, which ->
-            // Do something when the negative button is clicked
-            dialog.dismiss()
-
-        }
-        dilalog.show()
-    }
 
 }

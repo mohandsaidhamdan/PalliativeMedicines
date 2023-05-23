@@ -19,6 +19,12 @@
             android:name=".ads.ads"
             android:exported="false" />
         <activity
+            android:name=".topic.UpdateTopic"
+            android:exported="false" />
+        <activity
+            android:name=".topic.UpdateAdvice"
+            android:exported="false" />
+        <activity
             android:name=".chat.ListUserChat"
             android:exported="false" />
         <activity
@@ -31,7 +37,7 @@
             android:name=".topic.AddAdvice"
             android:exported="false" />
         <activity
-            android:name=".topic.detailDiseases"
+            android:name=".topic.TopicDetailsAdvice"
             android:exported="false" />
         <activity
             android:name=".Home"

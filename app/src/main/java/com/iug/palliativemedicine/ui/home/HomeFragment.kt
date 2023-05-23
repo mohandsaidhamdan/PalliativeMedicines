@@ -1,17 +1,12 @@
 package com.iug.palliativemedicine.ui.home
 
-import android.animation.Animator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,16 +19,12 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.iug.palliativemedicine.Home
-import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.model.advice
 import com.iug.palliativemedicine.topic.AddAdvice
 import com.iug.palliativemedicine.adapter.AdapterAdvice
 import com.iug.palliativemedicine.ads.ads
 import com.iug.palliativemedicine.auth.login
-import com.iug.palliativemedicine.chat.ListUserChat
 import com.iug.palliativemedicine.databinding.FragmentHomeBinding
-import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -140,14 +131,6 @@ class HomeFragment : Fragment() {
     fun ListViewDector() {
         val sheard = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
         val email = sheard.getString("email", "").toString()
-
-        // Continue with any additional logic using the "topic" list
-//        db.collection("Favorite").document(email).collection("favored")
-//            .get()
-//            .addOnSuccessListener { querySnapshot ->
-//                for (document in querySnapshot) {
-//                    val topicItem = document.getString("topic")
-//                    if (topicItem != null) {
         db.collection("advice")
             .get()
             .addOnSuccessListener {
@@ -157,6 +140,7 @@ class HomeFragment : Fragment() {
                             doc.getString("topic").toString(),
                             doc.getString("uri").toString(),
                             doc.getString("title").toString(),
+                            doc.getString("uriViedo").toString(),
                             doc.getString("description").toString(),
                             doc.getTimestamp("date")!!.toDate(),
                             doc.getBoolean("hidden")!!
@@ -199,6 +183,7 @@ class HomeFragment : Fragment() {
                                             doc.getString("topic").toString(),
                                             doc.getString("uri").toString(),
                                             doc.getString("title").toString(),
+                                            doc.getString("uriViedo").toString(),
                                             doc.getString("description").toString(),
                                             doc.getTimestamp("date")!!.toDate(),
                                             doc.getBoolean("hidden")!!
@@ -239,13 +224,6 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
-
-//        if (imageList.size == 0) {
-//            imageList.add(SlideModel("https://bit.ly/2YoJ77H", "The animal population decreased by 58 percent in 42 years."))
-//            imageList.add(SlideModel("https://bit.ly/2YoJ77H", "The animal population decreased by 58 percent in 42 years."))
-//            imageSlider.setImageList(imageList)
-//            imageSlider.setSlideAnimation(AnimationTypes.ROTATE_DOWN)
-//        }
 
 
         imageSlider.setItemClickListener(object : ItemClickListener {

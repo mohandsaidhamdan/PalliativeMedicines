@@ -21,23 +21,25 @@ import com.squareup.picasso.Picasso
 
 class Advice : AppCompatActivity() {
     private lateinit var binding: ActivityDateilsBinding
-    lateinit var player : SimpleExoPlayer
-    lateinit var playerView : PlayerView
+    lateinit var player: SimpleExoPlayer
+    lateinit var playerView: PlayerView
     val storage = FirebaseStorage.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDateilsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-       val title =  intent.getStringExtra("title").toString()
+        val title = intent.getStringExtra("title").toString()
+        val description = intent.getStringExtra("description").toString()
         playerView = binding.playerView
 
 
         val db = Firebase.firestore
-        db.collection("advice").whereEqualTo("title" , title)
+        db.collection("advice").whereEqualTo("title", title)
+//            .whereEqualTo("description", description)
             .get()
             .addOnSuccessListener {
-                for (doc in it){
+                for (doc in it) {
                     val des = doc.getString("description")
                     val topic = doc.getString("topic")
                     val title = doc.getString("title")
@@ -50,11 +52,11 @@ class Advice : AppCompatActivity() {
                     binding.title.text = title.toString()
 //                    binding.date.text = date.toString()
 
-                    DwnloadImage(uri.toString(),binding.imgeView)
-                    if(Viedo.toString().isNotEmpty())
-                    DwnloadVideo(Viedo.toString())
+                    DwnloadImage(uri.toString(), binding.imgeView)
+                    if (Viedo.toString().isNotEmpty())
+                        DwnloadVideo(Viedo.toString())
                     else
-                     playerView.visibility = View.GONE
+                        playerView.visibility = View.GONE
                 }
             }
 
@@ -63,19 +65,23 @@ class Advice : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        val i = Intent(this@Advice , Home::class.java)
+        val i = Intent(this@Advice, Home::class.java)
         startActivity(i)
         finish()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         player.release()
     }
 
 
+    override fun onStart() {
+        super.onStart()
+//        player.stop()
+    }
 
-
-    private fun DwnloadVideo(uri: String  ) {
+    private fun DwnloadVideo(uri: String) {
         val storageRef =
             storage.reference.child(uri) // Replace "images/image.jpg" with your actual image path in Firebase Storage
 
@@ -86,7 +92,7 @@ class Advice : AppCompatActivity() {
             val mediaItem = MediaItem.fromUri(ViedoUrl)
             player.setMediaItem(mediaItem)
             player.prepare()
-            player.play()
+//            player.play()
             // Use the imageUrl as needed (e.g., display the image, store it in a database, etc.)
         }.addOnFailureListener { exception ->
             // Handle any errors that occurred while retrieving the download URL

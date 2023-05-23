@@ -3,12 +3,16 @@ package com.iug.palliativemedicine.auth
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.iug.palliativemedicine.Favorite
 import com.iug.palliativemedicine.Home
+import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.databinding.ActivityLoginBinding
 
 class login : AppCompatActivity() {
@@ -48,9 +52,14 @@ class login : AppCompatActivity() {
 
     // func in Check email and password are correct or not
     private fun login(email: String, password: String) {
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+        val CprogressBar = findViewById<CardView>(R.id.CprogressBar)
+        CprogressBar.visibility = View.VISIBLE
+        progressBar.isIndeterminate = true
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    CprogressBar.visibility = View.GONE
                     // Login successful
                     val check = getSharedPreferences("SelectionFavorite", MODE_PRIVATE).getBoolean("che", false)
 
@@ -94,6 +103,7 @@ class login : AppCompatActivity() {
 
                 } else {
                     // Login failed
+                    CprogressBar.visibility = View.GONE
                     Toast.makeText(this, "Incorrect password or email.", Toast.LENGTH_SHORT).show()
                 }
             }

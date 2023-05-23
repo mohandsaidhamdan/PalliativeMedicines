@@ -68,7 +68,8 @@ class AddTopic : AppCompatActivity() {
         // Create a new user with a first and last name
         val Topic = hashMapOf(
             "uri" to uri,
-            "name" to name
+            "name" to name,
+            "tag" to name.replace(" " , "s")
         )
         //  DwnloadImage(uri)
 
@@ -116,55 +117,5 @@ class AddTopic : AppCompatActivity() {
             }
         }
     }
-    private fun createdetails(uri: String, name: String, title: String, details: String , date : Date) {
-        val Topic = hashMapOf(
-            "uri" to uri,
-            "name" to name ,
-            "title" to title ,
-            "details" to details ,
-            "date" to date
-        )
-//          DwnloadImage(uri , images)
-
-        val db = Firebase.firestore
-        // Add a new document with a generated ID
-        db.collection("details")
-            .add(Topic)
-            .addOnSuccessListener { documentReference ->
-                Log.d(
-                    "ContentValues.TAG",
-                    "DocumentSnapshot added with ID: ${documentReference.id}"
-                )
-            }
-            .addOnFailureListener { e ->
-                Log.w("ContentValues.TAG", "Error adding document", e)
-            }
-    }
-    fun getCurrentDate(): Date {
-        return Date()
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val i = Intent(this@AddTopic , Home::class.java)
-        startActivity(i)
-        finish()
-    }
-
-
-    private fun DwnloadImage(uri: String  , imageView2 : ImageView) {
-        val storageRef =
-            storage.reference.child(uri) // Replace "images/image.jpg" with your actual image path in Firebase Storage
-
-        storageRef.downloadUrl.addOnSuccessListener { uri ->
-            val imageUrl = uri.toString()
-
-            Picasso.get().load(imageUrl).into(imageView2)
-            // Use the imageUrl as needed (e.g., display the image, store it in a database, etc.)
-        }.addOnFailureListener { exception ->
-            // Handle any errors that occurred while retrieving the download URL
-        }
-    }
-
 
 }
