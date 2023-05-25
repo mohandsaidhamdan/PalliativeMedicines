@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.subscription.SubscriptionFragment">
+<Button
+    android:id="@+id/btnSendNotification"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="إرسال إشعار لجميع المستخدمين"
+    android:textStyle="bold"
+    android:textSize="18dp"
+    android:padding="4dp"
+    android:backgroundTint="@color/black"
+    android:layout_gravity="center"
+    android:layout_marginTop="10dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/RecyclerViewNotification"
+        android:layout_width="match_parent"
+        android:padding="4dp"
+        android:layout_marginBottom="80dp"
+        android:layout_height="match_parent" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>

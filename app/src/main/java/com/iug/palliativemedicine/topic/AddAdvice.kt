@@ -16,6 +16,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.databinding.ActivityAdddetailsBinding
+import com.iug.palliativemedicine.model.AdviceModel
+import com.iug.palliativemedicine.model.Topic
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -132,7 +134,7 @@ class AddAdvice : AppCompatActivity() {
         if (requestCode == Video_PICK_REQUEST){
             val selectedVideoUri = data!!.data
 //            videos.setVideoURI(selectedVideoUri)
-            Toast.makeText(this@AddAdvice, "New video added successfully", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@AddAdvice, "تم إضافة فيديو جديد بنجاح", Toast.LENGTH_SHORT).show()
 
             selectedVideoUri?.let { uploadVideo(it) }
         }
@@ -151,31 +153,25 @@ class AddAdvice : AppCompatActivity() {
     }
 
 
-    private fun createdetails(uri: String, topic: String, title: String, description: String, date : Date, uriViedo : String) {
-        val Topic = hashMapOf(
-            "uri" to uri,
-            "topic" to topic ,
-            "title" to title ,
-            "description" to description ,
-            "date" to date ,
-            "uriViedo" to uriViedo ,
-            "hidden" to false
-        )
-//          DwnloadImage(uri , images)
-
+    private fun createdetails(uri: String, topicName: String, title: String, description: String, date : Date, uriViedo : String) {
         val db = Firebase.firestore
-        // Add a new document with a generated ID
-        db.collection("advice")
-            .add(Topic)
-            .addOnSuccessListener { documentReference ->
-                Log.d(
-                    "ContentValues.TAG",
-                    "DocumentSnapshot added with ID: ${documentReference.id}"
-                )
+        
+        db.collection("Topic").whereEqualTo("topicName",topicName).get().addOnSuccessListener {
+            for (doc in it){
+                val id = doc.id
+                val Advices = AdviceModel(topicName ,uri,title ,uriViedo,description,date, false,topicName.replace(" " , ""), id)
+              val data = hashMapOf<String , Any>(
+                  "Count" to 0
+              )
+
+                val IdnewDocRef = db.collection("advice").document().id
+
+                db.collection("advice").document(IdnewDocRef).set(Advices)
+                db.collection("advice").document(IdnewDocRef)
+                    .collection("View").document("view").set(data)
+
             }
-            .addOnFailureListener { e ->
-                Log.w("ContentValues.TAG", "Error adding document", e)
-            }
+        }
     }
 
 
@@ -192,9 +188,10 @@ class AddAdvice : AppCompatActivity() {
 
           fun getTopic(){
               db = Firebase.firestore
+              val model = Topic()
               db.collection("Topic").get().addOnSuccessListener {
                   for(doc in it){
-                      val name = doc.get("name").toString()
+                      val name = doc.get("topicName").toString()
                       topic.add(name)
                   }
               }

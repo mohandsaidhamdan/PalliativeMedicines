@@ -22,7 +22,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.databinding.ActivityDetailDiseasesBinding
-import com.iug.palliativemedicine.model.advice
+import com.iug.palliativemedicine.model.AdviceModel
 import com.squareup.picasso.Picasso
 
 class TopicDetailsAdvice : AppCompatActivity() {
@@ -34,7 +34,7 @@ class TopicDetailsAdvice : AppCompatActivity() {
     lateinit var recyclerView: RecyclerView
 
 
-    var Adapter: FirestoreRecyclerAdapter<advice, topicItem>? = null
+    var Adapter: FirestoreRecyclerAdapter<AdviceModel, topicItem>? = null
     lateinit var url: String
 
 
@@ -77,7 +77,7 @@ class TopicDetailsAdvice : AppCompatActivity() {
 
 
         val option =
-            FirestoreRecyclerOptions.Builder<advice>().setQuery(query, advice::class.java).build()
+            FirestoreRecyclerOptions.Builder<AdviceModel>().setQuery(query, AdviceModel::class.java).build()
         apabter(option)
         recyclerView.layoutManager = GridLayoutManager(this@TopicDetailsAdvice, 1)
         recyclerView.adapter = Adapter
@@ -192,15 +192,15 @@ class TopicDetailsAdvice : AppCompatActivity() {
             .startAt(text)
             .endAt(text + "\ufaff")
         val option =
-            FirestoreRecyclerOptions.Builder<advice>().setQuery(query, advice::class.java).build()
+            FirestoreRecyclerOptions.Builder<AdviceModel>().setQuery(query, AdviceModel::class.java).build()
         apabter(option)
         Adapter!!.startListening()
         recyclerView.adapter = Adapter
         Adapter!!.notifyDataSetChanged()
     }
 
-    fun apabter(option: FirestoreRecyclerOptions<advice>) {
-        Adapter = object : FirestoreRecyclerAdapter<advice, topicItem>(option) {
+    fun apabter(option: FirestoreRecyclerOptions<AdviceModel>) {
+        Adapter = object : FirestoreRecyclerAdapter<AdviceModel, topicItem>(option) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): topicItem {
                 var view = LayoutInflater.from(this@TopicDetailsAdvice)
                     .inflate(R.layout.item_advice, parent, false)
@@ -208,7 +208,7 @@ class TopicDetailsAdvice : AppCompatActivity() {
                 return topicItem(view)
             }
 
-            override fun onBindViewHolder(holder: topicItem, position: Int, model: advice) {
+            override fun onBindViewHolder(holder: topicItem, position: Int, model: AdviceModel) {
                 val title = model.title
                 val date = model.date
                 val Image = model.uri
@@ -241,7 +241,7 @@ class TopicDetailsAdvice : AppCompatActivity() {
                 val dates = date.toString().substring(0, 13)
                 holder.itemDatediv.text = dates
                 holder.ItemTitle.text = title
-                holder.itemTopicdiv.text = model.topic
+                holder.itemTopicdiv.text = model.topicName
 
                 if (model.hidden) {
                     holder.imageHidden.setImageResource(R.drawable.hidden)
@@ -250,9 +250,9 @@ class TopicDetailsAdvice : AppCompatActivity() {
                 }
                 holder.btnHidden.setOnClickListener {
                     if (model.hidden) {
-                        getidUpdate(model.title.toString(), model.date.toString(), false)
+                        getidUpdate(model.title, model.date.toString(), false)
                     } else {
-                        getidUpdate(model.title.toString(), model.date.toString(), true)
+                        getidUpdate(model.title, model.date.toString(), true)
                     }
 
                 }
@@ -269,7 +269,7 @@ class TopicDetailsAdvice : AppCompatActivity() {
                 DwnloadImage(model.uri, holder.itemImagediv)
 
                 holder.root.setOnClickListener {
-                    val i = Intent(this@TopicDetailsAdvice, Advice::class.java)
+                    val i = Intent(this@TopicDetailsAdvice, AdviceModel::class.java)
                     i.putExtra("title", model.title)
                     startActivity(i)
                 }

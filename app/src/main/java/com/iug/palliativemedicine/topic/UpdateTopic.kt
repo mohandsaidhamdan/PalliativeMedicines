@@ -13,12 +13,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.Home
-import com.iug.palliativemedicine.databinding.ActivityAddtopicBinding
 import com.iug.palliativemedicine.databinding.ActivityUpdateTopicBinding
-import com.iug.palliativemedicine.databinding.BootomdialogBinding
-import com.iug.palliativemedicine.model.topic
+import com.iug.palliativemedicine.model.Topic
 import com.squareup.picasso.Picasso
-import java.util.*
 
 class UpdateTopic : AppCompatActivity() {
     lateinit var binding: ActivityUpdateTopicBinding
@@ -74,17 +71,15 @@ class UpdateTopic : AppCompatActivity() {
     }
 
     fun update(uri: String, name: String , oldName : String) {
-        val tag = name.replace(" ", "s")
-        val data = hashMapOf<String, Any>(
-            "name" to name,
-            "uri" to uri,
-            "tag" to tag
-        )
-        db.collection("Topic").whereEqualTo("name", oldName).get().addOnSuccessListener {
+        db.collection("Topic").whereEqualTo("topicName", oldName).get().addOnSuccessListener {
             for (doc in it) {
-                val id = doc.id
-
-                db.collection("Topic").document(id).update(data).addOnSuccessListener {
+                val topicId = doc.id
+                val data = hashMapOf<String, Any>(
+                  "topicName"  to name,
+                   "topicTag"  to name.replace(" " , ""),
+                    "uri" to uri
+                )
+                db.collection("Topic").document(topicId).update(data).addOnSuccessListener {
                     Toast.makeText(
                         this@UpdateTopic,
                         "تم التعديل بنجاح",

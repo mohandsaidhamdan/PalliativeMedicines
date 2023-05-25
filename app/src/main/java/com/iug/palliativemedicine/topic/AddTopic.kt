@@ -14,12 +14,10 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.databinding.ActivityAddtopicBinding
-import com.iug.palliativemedicine.databinding.BootomdialogBinding
-import com.squareup.picasso.Picasso
-import java.util.*
+import com.iug.palliativemedicine.model.Topic
 
 class AddTopic : AppCompatActivity() {
-    lateinit var binding : ActivityAddtopicBinding
+    lateinit var binding: ActivityAddtopicBinding
     val storage = FirebaseStorage.getInstance()
     lateinit var db: FirebaseFirestore
     private val IMAGE_PICK_REQUEST = 100
@@ -43,18 +41,19 @@ class AddTopic : AppCompatActivity() {
             }
             add.setOnClickListener {
                 if (check) {
-                    if (titlesEt.text.toString().isNotEmpty() ) {
+                    if (titlesEt.text.toString().isNotEmpty()) {
                         createTopic(url, titlesEt.text.toString())
                         Toast.makeText(
                             this@AddTopic,
                             "New topic added successfully",
                             Toast.LENGTH_LONG
                         ).show()
-                        val i = Intent(this@AddTopic , Home::class.java)
+                        val i = Intent(this@AddTopic, Home::class.java)
                         startActivity(i)
                         finish()
                     } else
-                        Toast.makeText(this@AddTopic, "All fields are required", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@AddTopic, "All fields are required", Toast.LENGTH_SHORT)
+                            .show()
 
                 } else
                     Toast.makeText(this@AddTopic, "Add a photo, please", Toast.LENGTH_SHORT).show()
@@ -64,29 +63,16 @@ class AddTopic : AppCompatActivity() {
 
         }
     }
+
     private fun createTopic(uri: String, name: String) {
-        // Create a new user with a first and last name
-        val Topic = hashMapOf(
-            "uri" to uri,
-            "name" to name,
-            "tag" to name.replace(" " , "s")
-        )
-        //  DwnloadImage(uri)
 
         val db = Firebase.firestore
-        // Add a new document with a generated ID
-        db.collection("Topic")
-            .add(Topic)
-            .addOnSuccessListener { documentReference ->
-                Log.d(
-                    "ContentValues.TAG",
-                    "DocumentSnapshot added with ID: ${documentReference.id}"
-                )
-            }
-            .addOnFailureListener { e ->
-                Log.w("ContentValues.TAG", "Error adding document", e)
-            }
+        val newDocRef = db.collection("Topic").document().id
+        val topic = Topic(name, uri, name.replace(" ", ""), newDocRef)
+
+        FirebaseFirestore.getInstance().collection("Topic").document(newDocRef).set(topic)
     }
+
     private fun uploadImage(imageUri: Uri) {
         val storageRef = storage.reference
         url = "images/${imageUri.lastPathSegment}"
@@ -105,15 +91,16 @@ class AddTopic : AppCompatActivity() {
             }
         }
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IMAGE_PICK_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             val selectedImageUri = data.data
-            try{
+            try {
                 images.setImageURI(selectedImageUri)
                 data.data?.let { uploadImage(it) }
-            }catch (e:Exception){
-                Log.d("Ecoption" , e.message.toString())
+            } catch (e: Exception) {
+                Log.d("Ecoption", e.message.toString())
             }
         }
     }

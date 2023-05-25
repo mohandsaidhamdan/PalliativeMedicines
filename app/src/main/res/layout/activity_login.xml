@@ -43,7 +43,7 @@
 
             android:padding="18dp"
             android:rotation="0"
-            android:text="Login to Account"
+            android:text="تسجيل الدخول"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="24sp"
@@ -65,17 +65,6 @@
                 android:orientation="vertical">
 
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="50dp"
-                    android:layout_marginEnd="20dp"
-                    android:text="Email"
-                    android:textColor="@color/black"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/emailLayout"
                     style="@style/LoginTextInputOuterFieldStyle"
@@ -90,12 +79,23 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginEnd="20dp"
+                        android:text="الإيميل"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/emailEt"
                         style="@style/LoginTextInputInnerFieldStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Type your Email"
+                        android:hint="أدخل الإيميل"
                         android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,7 +105,7 @@
                     android:layout_marginStart="15dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="20dp"
-                    android:text="Password"
+                    android:text="كلمة السر"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -130,7 +130,7 @@
                         style="@style/LoginTextInputInnerFieldStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Type Your Password"
+                        android:hint="أدخل كلمة السر"
                         android:inputType="textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -144,7 +144,7 @@
                     android:layout_marginBottom="30dp"
                     android:backgroundTint="#CC2216"
                     android:padding="5dp"
-                    android:text="Login"
+                    android:text="تسجيل الدخول"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -161,7 +161,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="10dp"
-                    android:text="Not Registered Yet , Sign Up !"
+                    android:text=" ليس لدي حساب إنشاء حساب"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="parent"

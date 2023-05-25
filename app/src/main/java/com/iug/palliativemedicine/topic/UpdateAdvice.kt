@@ -23,6 +23,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.databinding.ActivityAdddetailsBinding
 import com.iug.palliativemedicine.databinding.ActivityUpdateAdviceBinding
+import com.iug.palliativemedicine.model.AdviceModel
 import com.squareup.picasso.Picasso
 import java.util.*
 import kotlin.collections.ArrayList
@@ -47,10 +48,11 @@ class UpdateAdvice : AppCompatActivity() {
         db = Firebase.firestore
 
         images = binding.image
-        val oldTitle = intent.getStringExtra("title").toString()
-        val description = intent.getStringExtra("description").toString()
-        val uriImageOld = intent.getStringExtra("uri").toString()
-        val topic = intent.getStringExtra("topic").toString()
+        val model = AdviceModel()
+        val oldTitle = intent.getStringExtra(model.title).toString()
+        val description = intent.getStringExtra(model.description).toString()
+        val uriImageOld = intent.getStringExtra(model.uri).toString()
+        val topic = intent.getStringExtra(model.topicName).toString()
         var uriViedoOld = ""
         topics = ArrayList<String>()
         getTopic()
@@ -80,17 +82,9 @@ class UpdateAdvice : AppCompatActivity() {
 
 
 
-
-
-
-
-
-
-
-
-        db.collection("advice").whereEqualTo("title", oldTitle).get().addOnSuccessListener {
+        db.collection("advice").whereEqualTo("adviceTitle", oldTitle).get().addOnSuccessListener {
             for (doc in it) {
-                uriViedoOld = doc.get("uriViedo").toString()
+                uriViedoOld = doc.get(model.uriViedo).toString()
                 if (uriViedo.isNullOrEmpty() || uriViedo == "") {
                     DwnloadVideo(uriViedo)
                 } else {
@@ -103,9 +97,13 @@ class UpdateAdvice : AppCompatActivity() {
         if (uriImageOld.isNotEmpty()) {
             DwnloadImage(uriImageOld, binding.image)
         }
+
+
         binding.updateTitles.setText(title)
         binding.UpdateTopic.setText(topic)
         binding.updateDesc.setText(description)
+
+
 
         var checkImageUpdate = false
         binding.image.setOnClickListener {
@@ -274,35 +272,49 @@ class UpdateAdvice : AppCompatActivity() {
 
     fun update(
         uri: String,
-        topic: String,
+        topicName: String,
         title: String,
         description: String,
         date: Date,
         uriViedo: String,
         oldTitle: String
     ) {
-        val data = hashMapOf<String, Any>(
-            "uri" to uri,
-            "topic" to topic,
-            "title" to title,
-            "description" to description,
-            "date" to date,
-            "uriViedo" to uriViedo,
-            "hidden" to false
-        )
+        val model = AdviceModel()
+
+        val db = Firebase.firestore
+
         db.collection("advice").whereEqualTo("title", oldTitle).get().addOnSuccessListener {
             for (doc in it) {
-                val id = doc.id
-                db.collection("advice").document(id).update(data).addOnSuccessListener {
-                    Toast.makeText(
-                        this,
-                        "تم التعديل بنجاح",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    val i = Intent(this, Home::class.java)
-                    startActivity(i)
-                    finish()
+                val idAdvice = doc.id
+                db.collection("Topic").whereEqualTo("topicName",topicName).get().addOnSuccessListener {
+                    for (doc in it){
+                        val idTopic = doc.id
+                        val data = hashMapOf<String, Any>(
+                            model.uri to uri,
+                            model.topicName to topicName,
+                            model.title to title,
+                            model.description to description,
+                            "date" to date,
+                            model.uriViedo to uriViedo,
+                            model.topicId to idTopic,
+                            "hidden" to false
+                        )
+                        db.collection("advice").document(idAdvice).update(data).addOnSuccessListener {
+                            Toast.makeText(
+                                this,
+                                "تم التعديل بنجاح",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            val i = Intent(this, Home::class.java)
+                            startActivity(i)
+                            finish()
+                        }
+
+
+                    }
                 }
+
+
             }
 
         }

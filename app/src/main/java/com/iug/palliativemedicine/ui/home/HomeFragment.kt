@@ -19,12 +19,13 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.iug.palliativemedicine.model.advice
+import com.iug.palliativemedicine.model.AdviceModel
 import com.iug.palliativemedicine.topic.AddAdvice
 import com.iug.palliativemedicine.adapter.AdapterAdvice
 import com.iug.palliativemedicine.ads.ads
 import com.iug.palliativemedicine.auth.login
 import com.iug.palliativemedicine.databinding.FragmentHomeBinding
+import com.iug.palliativemedicine.model.Topic
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -35,7 +36,7 @@ class HomeFragment : Fragment() {
     lateinit var db: FirebaseFirestore
     lateinit var recyclerView: RecyclerView
     val topic = ArrayList<String>()
-    val data = ArrayList<advice>()
+    val data = ArrayList<AdviceModel>()
     lateinit var myAdaoter: AdapterAdvice
     val storage = FirebaseStorage.getInstance()
 
@@ -131,13 +132,12 @@ class HomeFragment : Fragment() {
     fun ListViewDector() {
         val sheard = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
         val email = sheard.getString("email", "").toString()
-        db.collection("advice")
-            .get()
+        db.collection("advice").get()
             .addOnSuccessListener {
                 for (doc in it) {
                     data.add(
-                        advice(
-                            doc.getString("topic").toString(),
+                        AdviceModel(
+                            doc.getString("topicName").toString(),
                             doc.getString("uri").toString(),
                             doc.getString("title").toString(),
                             doc.getString("uriViedo").toString(),
@@ -179,8 +179,8 @@ class HomeFragment : Fragment() {
                             .addOnSuccessListener {
                                 for (doc in it) {
                                     data.add(
-                                        advice(
-                                            doc.getString("topic").toString(),
+                                        AdviceModel(
+                                            doc.getString("topicName").toString(),
                                             doc.getString("uri").toString(),
                                             doc.getString("title").toString(),
                                             doc.getString("uriViedo").toString(),

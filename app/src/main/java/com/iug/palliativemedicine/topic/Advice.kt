@@ -17,6 +17,7 @@ import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.databinding.ActivityDateilsBinding
 import com.iug.palliativemedicine.databinding.ActivityHomeBinding
+import com.iug.palliativemedicine.model.AdviceModel
 import com.squareup.picasso.Picasso
 
 class Advice : AppCompatActivity() {
@@ -33,15 +34,16 @@ class Advice : AppCompatActivity() {
         val description = intent.getStringExtra("description").toString()
         playerView = binding.playerView
 
-
+        val model = AdviceModel()
         val db = Firebase.firestore
         db.collection("advice").whereEqualTo("title", title)
 //            .whereEqualTo("description", description)
             .get()
             .addOnSuccessListener {
                 for (doc in it) {
+
                     val des = doc.getString("description")
-                    val topic = doc.getString("topic")
+                    val topic = doc.getString("topicName")
                     val title = doc.getString("title")
                     val uri = doc.getString("uri")
                     val Viedo = doc.getString("uriViedo")
@@ -72,7 +74,7 @@ class Advice : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        player.release()
+//        player.release()
     }
 
 

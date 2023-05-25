@@ -13,27 +13,26 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.R
-import com.iug.palliativemedicine.model.advice
 import com.iug.palliativemedicine.topic.Advice
 import com.iug.palliativemedicine.topic.UpdateAdvice
 import com.squareup.picasso.Picasso
-import java.security.cert.Extension
 
 class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>, Filterable {
 
 
     var activity: Activity
-    var data: ArrayList<advice>
-    private var filterList: ArrayList<advice>
+    var data: ArrayList<com.iug.palliativemedicine.model.AdviceModel>
+    private var filterList: ArrayList<com.iug.palliativemedicine.model.AdviceModel>
     lateinit var db: FirebaseFirestore
 
-    constructor(activity: Activity, data: ArrayList<advice>) : super() {
+    constructor(activity: Activity, data: ArrayList<com.iug.palliativemedicine.model.AdviceModel>) : super() {
         this.activity = activity
         this.data = data
         this.filterList = data
@@ -47,6 +46,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>, Filterab
         val btnHidden = itemView.findViewById<CardView>(R.id.btnHidden)
         val imageHidden = itemView.findViewById<ImageView>(R.id.imageHidden)
         val btnUpdate = itemView.findViewById<CardView>(R.id.btnUpdateAdvice)
+        val textnumberView = itemView.findViewById<TextView>(R.id.textnumberView)
         val root = itemView.rootView
     }
 
@@ -91,7 +91,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>, Filterab
         val dates = date.toString().substring(0, 13)
         holder.itemDatediv.text = dates
         holder.ItemTitle.text = title
-        holder.itemTopicdiv.text = data[position].topic
+        holder.itemTopicdiv.text = data[position].topicName
 
         if (data[position].hidden) {
             holder.imageHidden.setImageResource(R.drawable.hidden)
@@ -126,12 +126,32 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>, Filterab
             i.putExtra("title", data[position].title)
             i.putExtra("description", data[position].description)
             i.putExtra("uri", data[position].uri)
-            i.putExtra("topic", data[position].topic)
+            i.putExtra("topic", data[position].topicName)
             i.putExtra("uriViedo", data[position].uriViedo)
             i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             activity.startActivity(i)
         }
+       db = Firebase.firestore
+        db.collection("advice").whereEqualTo("title", data[position].title).get().addOnSuccessListener {
+            for (doc in it){
+                val id = doc.id
+                db.collection("advice").document(id).collection("View").document("view").get().addOnSuccessListener {
+                    val count = it.get("Count")
+                    holder.textnumberView.text = count.toString()
+                }
+
+            }
+        }
         holder.root.setOnClickListener {
+            db.collection("advice").whereEqualTo("title", data[position].title).get().addOnSuccessListener {
+                     for (doc in it){
+                         val id = doc.id
+                         db.collection("advice").document(id).collection("View").document("view")
+                             .update("Count" , FieldValue.increment(1))
+
+                     }
+            }
+            db.collection("advice").document()
             val i = Intent(activity, Advice::class.java)
             val sheard = activity.getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
             val email = sheard.getString("email", "").toString()
@@ -152,7 +172,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>, Filterab
                     filterResults.values = filterList
                 } else {
                     var searchchar = p0.toString().toLowerCase()
-                    val itemModel = ArrayList<advice>()
+                    val itemModel = ArrayList<com.iug.palliativemedicine.model.AdviceModel>()
                     for (item in filterList) {
                         if (item.title.contains(searchchar)) {
                             itemModel.add(item)
@@ -168,7 +188,7 @@ class AdapterAdvice : RecyclerView.Adapter<AdapterAdvice.MyViewHolder>, Filterab
 
             override fun publishResults(p0: CharSequence?, filterResults: FilterResults?) {
                 data =
-                    filterResults!!.values as ArrayList<advice> /* = java.util.ArrayList<com.example.vicky.contactreader.ContactDTO> */
+                    filterResults!!.values as ArrayList<com.iug.palliativemedicine.model.AdviceModel> /* = java.util.ArrayList<com.example.vicky.contactreader.ContactDTO> */
                 notifyDataSetChanged()
             }
 

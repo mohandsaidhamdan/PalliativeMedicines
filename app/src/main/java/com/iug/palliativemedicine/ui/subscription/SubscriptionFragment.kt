@@ -1,8 +1,10 @@
 package com.iug.palliativemedicine.ui.subscription
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +15,16 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.Home
 import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.databinding.ActivityFavoriteBinding
-import com.iug.palliativemedicine.model.topic
+import com.iug.palliativemedicine.model.Topic
 import com.squareup.picasso.Picasso
 
 
@@ -29,7 +33,7 @@ class SubscriptionFragment : Fragment() {
     val storage = FirebaseStorage.getInstance()
     lateinit var db: FirebaseFirestore
     lateinit var recyclerView: RecyclerView
-    var Adapter: FirestoreRecyclerAdapter<topic, topicItem>? = null
+    var Adapter: FirestoreRecyclerAdapter<Topic, topicItem>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +66,7 @@ class SubscriptionFragment : Fragment() {
         val query = db.collection("Topic")
 
         val option =
-            FirestoreRecyclerOptions.Builder<topic>().setQuery(query, topic::class.java).build()
+            FirestoreRecyclerOptions.Builder<Topic>().setQuery(query, Topic::class.java).build()
         apabter(option)
 
 
@@ -124,114 +128,77 @@ class SubscriptionFragment : Fragment() {
     fun searchList(text: String) {
         val query = db.collection("Topic").orderBy("name").startAt(text).endAt(text + "\ufaff")
         val option =
-            FirestoreRecyclerOptions.Builder<topic>().setQuery(query, topic::class.java).build()
+            FirestoreRecyclerOptions.Builder<Topic>().setQuery(query, Topic::class.java).build()
         apabter(option)
         Adapter!!.startListening()
         recyclerView.adapter = Adapter
         Adapter!!.notifyDataSetChanged()
     }
 
-    fun apabter(option: FirestoreRecyclerOptions<topic>) {
-        Adapter = object : FirestoreRecyclerAdapter<topic, topicItem>(option) {
+    fun apabter(option: FirestoreRecyclerOptions<Topic>) {
+        Adapter = object : FirestoreRecyclerAdapter<Topic, topicItem>(option) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): topicItem {
                 var view = LayoutInflater.from(context)
                     .inflate(R.layout.item_selection_topic, parent, false)
                 return topicItem(view)
             }
 
-            override fun onBindViewHolder(holder: topicItem, position: Int, model: topic) {
-                val name = model.name
+            override fun onBindViewHolder(holder: topicItem, position: Int, model: Topic) {
+                val name = model.topicName
                 val Image = model.uri
 
 
                 holder.Itemname.text = name
                 DwnloadImage(model.uri, holder.ItemImage)
-                val email = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
-                        .getString("email", "email").toString()
 
+                // check box
                 // check box
                 holder.check.setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
                         // Checkbox is checked, perform desired actions
-                        val db = FirebaseFirestore.getInstance()
-                        val usersCollection = db.collection("Favorite")
+                        val db = Firebase.firestore
+                        val email = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE).getString("email", "email").toString()
 
-                        // Create a new user document
-                        val newUser = hashMapOf("favored" to "ListFavored")
-                        // Add the user document to the "users" collection
-                        usersCollection.document(email).set(newUser)
-                            .addOnSuccessListener { documentReference ->
-                                val id = email
-                                val newFavorite = hashMapOf(
-                                    "topic" to model.name
-                                )
-                                // Create a new favored document within the "posts" subcollection
-                                usersCollection.document(id).collection("favored")
-                                    .document(model.name).set(newFavorite)
+                        /// Add the user document to the "users" collection
+                        val IdnewDocRef = db.collection("users").document(email).collection("Favorite").document().id
 
+                        val newFavorite = hashMapOf(
+                            "topicId" to model.topicId,
+                            "topicName" to model.topicName,
+                            "topicTag" to IdnewDocRef
+                        )
 
+                        db.collection("users").document(email).collection("Favorite").document(IdnewDocRef).set(newFavorite)
+                        FirebaseMessaging.getInstance().subscribeToTopic(IdnewDocRef)
+                            .addOnCompleteListener { task ->
+                                var msg = "Subscribed"
+                                if (!task.isSuccessful) {
+                                    Log.d(
+                                        ContentValues.TAG,
+                                        task.exception?.message.toString()
+                                    )
+                                    msg = "Subscribe failed"
+                                }
+                                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
-
-                    } else {
+                    }
+                    else {
                         // Checkbox is checked, perform desired actions
                         val db = FirebaseFirestore.getInstance()
 
                         val email =
-                            requireActivity().getSharedPreferences(
-                                "user",
-                                AppCompatActivity.MODE_PRIVATE
-                            ).getString("email", "email")
+                            requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE).getString("email", "email")
                                 .toString()
-
-
-                        // get the id user document to the "Favorite" collection
-                        db.collection("Favorite").get()
-                            .addOnSuccessListener { documentReference ->
-                                for (doc in documentReference) {
-                                    val id = doc.id
-                                    if (id.toString() == email) {
-                                        val postsSubcollection =
-                                            db.collection("Favorite").document(id)
-                                                .collection("favored")
-                                                .whereEqualTo("topic", model.name)
-                                        postsSubcollection.get()
-                                            .addOnSuccessListener { querySnapshot ->
-                                                val batch = db.batch()
-                                                //delete in favorite
-                                                for (document in querySnapshot) {
-                                                    batch.delete(document.reference)
-                                                }
-
-                                                batch.commit()
-
-                                            }
-                                    }
-
-
-                                }
-
+                        db.collection("users").document(email).collection("Favorite").whereEqualTo("topicId" , model.topicId).get().addOnSuccessListener {
+                            for (doc in it) {
+                                val id = doc.id
+                                db.collection("users").document(email).collection("Favorite").document(id).delete()
                             }
+                        }
                     }
 
                 }
 
-                // get the id user document to the "Favorite" collection
-                db.collection("Favorite").get()
-                    .addOnSuccessListener { documentReference ->
-                        for (doc in documentReference) {
-                            val id = doc.id
-                            if (id.toString() == "email") {
-                                val postsSubcollection =
-                                    db.collection("Favorite").document(id).collection("favored")
-                                postsSubcollection.get()
-                                    .addOnSuccessListener { querySnapshot ->
-                                        for (doc in querySnapshot) {
-                                            val topic = doc.get("topic")
-                                            holder.check.isChecked = topic == model.name
-
-                                        }
-                                    }
-                            }
 
 
                         }
@@ -241,5 +208,3 @@ class SubscriptionFragment : Fragment() {
             }
 
         }
-    }
-}

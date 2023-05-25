@@ -24,7 +24,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.databinding.FragmentAdviceBinding
 import com.iug.palliativemedicine.topic.TopicDetailsAdvice
-import com.iug.palliativemedicine.model.topic
+import com.iug.palliativemedicine.model.Topic
 import com.iug.palliativemedicine.topic.AddTopic
 import com.iug.palliativemedicine.topic.UpdateTopic
 import com.squareup.picasso.Picasso
@@ -39,8 +39,8 @@ class TopicFragments : Fragment() {
     private val IMAGE_PICK_REQUEST = 100
     lateinit var imageViewDialog: ImageView
     lateinit var url: String
-    private lateinit var filterList: ArrayList<topic>
-    var Adapter: FirestoreRecyclerAdapter<topic, topicItem>? = null
+    private lateinit var filterList: ArrayList<Topic>
+    var Adapter: FirestoreRecyclerAdapter<Topic, topicItem>? = null
     lateinit var binding: FragmentAdviceBinding
 
     override fun onCreateView(
@@ -102,7 +102,7 @@ class TopicFragments : Fragment() {
             .addOnSuccessListener { result ->
                 for (document in result) {
 
-                    val name = document.get("name")
+                    val name = document.get("topicName")
                     if (name == nameTopic) {
                         val id = document.id
                         delete(id)
@@ -181,23 +181,23 @@ class TopicFragments : Fragment() {
     fun searchList(text: String) {
         val query = db.collection("Topic").orderBy("name").startAt(text).endAt(text + "\ufaff")
         val option =
-            FirestoreRecyclerOptions.Builder<topic>().setQuery(query, topic::class.java).build()
+            FirestoreRecyclerOptions.Builder<Topic>().setQuery(query, Topic::class.java).build()
         apabter(option)
         Adapter!!.startListening()
         recyclerView.adapter = Adapter
         Adapter!!.notifyDataSetChanged()
     }
 
-    fun apabter(option: FirestoreRecyclerOptions<topic>) {
-        Adapter = object : FirestoreRecyclerAdapter<topic, topicItem>(option) {
+    fun apabter(option: FirestoreRecyclerOptions<Topic>) {
+        Adapter = object : FirestoreRecyclerAdapter<Topic, topicItem>(option) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): topicItem {
                 var view = LayoutInflater.from(context)
                     .inflate(R.layout.item_topic, parent, false)
                 return topicItem(view)
             }
 
-            override fun onBindViewHolder(holder: topicItem, position: Int, model: topic) {
-                val name = model.name
+            override fun onBindViewHolder(holder: topicItem, position: Int, model: Topic) {
+                val name = model.topicName
 
                 holder.root.setOnLongClickListener { _ ->
 
@@ -207,7 +207,7 @@ class TopicFragments : Fragment() {
                     dilalog.setPositiveButton("delete") { dialog, which ->
                         // Do something when the positive button is clicked
                         Toast.makeText(context, "تم الحذف بنجاح", Toast.LENGTH_SHORT).show()
-                        getidDelete(model.name.toString())
+                        getidDelete(model.topicName.toString())
                         dialog.dismiss()
 
                     }
@@ -237,7 +237,7 @@ class TopicFragments : Fragment() {
                 holder.btn_update.setOnClickListener {
                     val i = Intent(requireContext(), UpdateTopic::class.java)
                     i.putExtra("imageUri", model.uri)
-                    i.putExtra("title", model.name)
+                    i.putExtra("title", model.topicName)
                     startActivity(i)
 
                 }
@@ -269,7 +269,7 @@ class TopicFragments : Fragment() {
         val query = db.collection("Topic")
 
         val option =
-            FirestoreRecyclerOptions.Builder<topic>().setQuery(query, topic::class.java).build()
+            FirestoreRecyclerOptions.Builder<Topic>().setQuery(query, Topic::class.java).build()
         apabter(option)
 Adapter!!.notifyDataSetChanged()
     }
