@@ -2,6 +2,7 @@ package com.iug.palliativemedicine.ui.subscription
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.Timestamp
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -34,7 +38,7 @@ class SubscriptionFragment : Fragment() {
     lateinit var db: FirebaseFirestore
     lateinit var recyclerView: RecyclerView
     var Adapter: FirestoreRecyclerAdapter<Topic, topicItem>? = null
-
+    private lateinit var analytics: FirebaseAnalytics
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,6 +47,10 @@ class SubscriptionFragment : Fragment() {
         binding = ActivityFavoriteBinding.inflate(layoutInflater)
         val root: View = binding.root
 
+        analytics = Firebase.analytics
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "SubscriptionFragment")
+        }
 
         val sheard =  requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)
         val typeAcount = sheard.getString("typeAccount", "").toString()
@@ -169,6 +177,8 @@ class SubscriptionFragment : Fragment() {
                         )
 
                         db.collection("users").document(email).collection("Favorite").document(IdnewDocRef).set(newFavorite)
+
+
                         FirebaseMessaging.getInstance().subscribeToTopic(IdnewDocRef)
                             .addOnCompleteListener { task ->
                                 var msg = "Subscribed"
@@ -192,9 +202,23 @@ class SubscriptionFragment : Fragment() {
                         db.collection("users").document(email).collection("Favorite").whereEqualTo("topicId" , model.topicId).get().addOnSuccessListener {
                             for (doc in it) {
                                 val id = doc.id
+                                val tag = doc.get("topicTag").toString()
+                                FirebaseMessaging.getInstance().unsubscribeFromTopic(tag)
+                                    .addOnCompleteListener { task ->
+                                        var msg = "Unsubscribed"
+                                        if (!task.isSuccessful) {
+                                        Log.d(
+                                            ContentValues.TAG,
+                                            task.exception?.message.toString()
+                                        )
+                                        msg = "Unsubscribe failed"        }
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    }
                                 db.collection("users").document(email).collection("Favorite").document(id).delete()
                             }
                         }
+
+
                     }
 
                 }

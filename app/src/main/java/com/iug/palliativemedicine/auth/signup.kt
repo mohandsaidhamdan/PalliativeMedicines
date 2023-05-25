@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.iug.palliativemedicine.R
 import com.iug.palliativemedicine.databinding.ActivityLoginBinding
 import com.iug.palliativemedicine.databinding.ActivitySignupBinding
@@ -129,7 +130,12 @@ class signup : AppCompatActivity() {
         )
         // Add a new document with a generated ID
         db.collection("users").document(email).set(user)
-
+        FirebaseMessaging.getInstance().subscribeToTopic("all")
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.d(TAG, task.exception?.message.toString())
+                }
+            }
     }
 }
 

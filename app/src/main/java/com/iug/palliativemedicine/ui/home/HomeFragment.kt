@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.denzcoskun.imageslider.constants.AnimationTypes
 import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -39,7 +42,7 @@ class HomeFragment : Fragment() {
     val data = ArrayList<AdviceModel>()
     lateinit var myAdaoter: AdapterAdvice
     val storage = FirebaseStorage.getInstance()
-
+    private lateinit var analytics: FirebaseAnalytics
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -52,6 +55,12 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        analytics = Firebase.analytics
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "HomeFragment")
+        }
+
         db = Firebase.firestore
         // get type Account
         val sheard = requireActivity().getSharedPreferences("user", AppCompatActivity.MODE_PRIVATE)

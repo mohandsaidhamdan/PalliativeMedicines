@@ -7,17 +7,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import com.iug.palliativemedicine.databinding.ActivityHomeBinding
 
 class Home : AppCompatActivity() {
-
-
+    private lateinit var analytics: FirebaseAnalytics
     private lateinit var binding: ActivityHomeBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+         analytics = Firebase.analytics
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "Home")
+        }
+
 
         val navView: BottomNavigationView = binding.navView
 //     val typeAcount  = intent.getStringExtra("typeAcount").toString()

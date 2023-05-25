@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -18,7 +21,7 @@ import com.iug.palliativemedicine.databinding.ActivityLoginBinding
 class login : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var firebaseAuth: FirebaseAuth
-
+    private lateinit var analytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +30,11 @@ class login : AppCompatActivity() {
         // Firebase Aut With Email And Password
         firebaseAuth = FirebaseAuth.getInstance()
 
+
+        analytics = Firebase.analytics
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "login")
+        }
         // btn Login
         binding.button.setOnClickListener {
             // get email and password
